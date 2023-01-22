@@ -10,6 +10,7 @@ import uuid
 from memphis import Memphis
 from memphis.memphis import Consumer
 from filelock import FileLock
+
 logger = logging.getLogger(__file__)
 my_id = str(uuid.uuid4())[:30]
 loop = asyncio.get_event_loop()
@@ -54,9 +55,9 @@ async def open_memphis(**kwargs):
 def process(data_json, file):
     log("consume:", data_json["row"])
     if data_json["last"]:
-        log("im the last consumer, last line:", data_json["row"])
+        print("im the last consumer, last line:", data_json["row"])
 
-    log(", ".join(data_json["row"]), file=file)
+    print(", ".join(data_json["row"]), file=file)
 
 
 async def handle_messages(msgs, output_file):
@@ -80,6 +81,7 @@ async def main():
     local_path = args[0].replace("^~/", "")
 
     output_file = f"./out/{local_path}"
+    print("output_file =", output_file)
     station = args[1]
 
     async def handle(msgs, error):
