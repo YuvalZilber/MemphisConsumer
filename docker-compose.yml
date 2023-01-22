@@ -1,0 +1,12 @@
+version: "3"
+services:
+  consumer:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    image: consumer_image:latest
+    tty: true        # docker run -t
+    read_only: true
+    network_mode: "host"
+    volumes:
+      - "~/:/app/out:rw"

@@ -1,0 +1,56 @@
+#!/bin/zsh
+RED='\033[0;31m'
+BLUE='\033[0;36m'
+NC='\033[0m' # No Color
+BOLD=$(tput bold)
+NORMAL=$(tput sgr0)
+TITLE='\e[7m'
+TITLE2='\e[1;30;40m'
+ITALIC='\e[3m'
+
+print_usage()
+{
+	echo "${BOLD}Usage:${NORMAL}"
+	echo "	./produce [help] [option=value...]"
+	echo "produce csv file rows to memphis"
+    echo "${BOLD}Arguments:${NORMAL}"
+    echo "    ${BOLD}${ITALIC}help${NORMAL} show this menu"
+	echo "  ${BOLD}Options:${NORMAL}"
+    echo "    ${TITLE}OPTION\tTYPE\t DEFAULT\t DESCRIPTION\t\t\t\t  ${NC}"
+	echo "    ${BOLD}${ITALIC}file${NORMAL}\tstr\t * required\t the csv file path (relative to ~)"
+	echo "    ${BOLD}${ITALIC}station${NORMAL}\tstr\t yzStation\t station name to produce the messages to"
+	echo "    ${BOLD}${ITALIC}debug${NORMAL}\tbool\t true\t\t should print debug messages? [true|false]"
+	echo "    ${BOLD}${ITALIC}threads${NORMAL}\tint\t 1\t\t the number of threads to read and produce"
+    echo "${BOLD}Example:${NORMAL}"
+    echo './produce station=station_sahar debug=false threads=5 file="~/path/to/file.csv"'
+	exit 254
+}
+if [[ $# == 0 ]]; then
+    print_usage
+fi
+for ARGUMENT in "$@"
+do
+   if [[ $ARGUMENT == "help" ]]
+   KEY=$(echo $ARGUMENT | cut -f1 -d=)
+
+   KEY_LENGTH=${#KEY}
+   VALUE="${ARGUMENT:$KEY_LENGTH+1}"
+
+   export "$KEY"="$VALUE"
+done
+
+echo $key
+if [[ -z $debug ]]; then
+    echo "[INFO] no '${BOLD}debug${NORMAL}' argument given. default: debug=true"
+    debug="true"
+fi
+if [[ -z $station ]]; then
+    echo "[INFO] no '${BOLD}station${NORMAL}' argument given. default: station=yzStation"
+    station="true"
+fi
+if [[ -z $threads ]]; then
+    echo "[INFO] no '${BOLD}threads${NORMAL}' argument given. default: threads=1"
+    threads="1"
+fi
+
+docker exec -it producer java -classpath "gson-2.10.1.jar:./" Main $file $station $threads $debug
